@@ -1,30 +1,49 @@
-import  PyPDF2
+import PyPDF2
 import os
 
-def add_watermark(water_file,page_pdf,w,h):
+def add_watermark(water_file,page_pdf,w,h,water_w,water_h):
     """
     将水印pdf与pdf的一页进行合并
     :param water_file:
     :param page_pdf:
     :return:
     """
+    mediabox = page_pdf.mediabox
+    # print(mediabox)
     pdfReader = PyPDF2.PdfReader(water_file)
-    pdfReader.pages[0].scale_to(float(w), float(h))
+    #pdfReader.pages[0].scale_to(float(w), float(h))#将水印文件缩放到被加水印的pdf一样大小
+    #下面这两行是再pdf上覆盖水印
+    # page_pdf.transfer_rotation_to_content()
+    # page_pdf.merge_page(pdfReader.pages[0],expand=True)
+    #下面是再水印上覆盖pdf
+    image_page = pdfReader.pages[0]
+    if(w>=water_w or h>=water_h):
+        print("ppt")
+        image_page.scale_to(w, h)
+    else:
+        print("a4")
+        x = float(w/water_w)
+        y = float(h/water_h)
+        # print(x,y)
+        op = PyPDF2.Transformation().scale(sx=x, sy=y)
+        image_page.add_transformation(op)
     page_pdf.transfer_rotation_to_content()
-    page_pdf.merge_page(pdfReader.pages[0],expand=True)
+    page_pdf.merge_page(image_page,expand=True)
+    # page_pdf.mediabox = mediabox1
     return page_pdf
 def add_watermark_2(path,a4_water_path,ppt_water_path):
     pdfWriter = PyPDF2.PdfWriter()  # 用于写pdf
     pdfReader = PyPDF2.PdfReader(path)  # 读取pdf内容
 
-
+    a4_water_h,a4_water_w = get_pdf_size(a4_water_path)
+    ppt_water_h,ppt_water_w = get_pdf_size(ppt_water_path)
     # 遍历pdf的每一页,添加水印
     for page in range(len(pdfReader.pages)):
-        w, h = get_pdf_size(pdfReader.pages[page],True)
+        h,w = get_pdf_size(pdfReader.pages[page],True)
         if(get_pdf_type(pdfReader.pages[page],True)):
-            page_pdf = add_watermark(a4_water_path, pdfReader.pages[page],w,h)
+            page_pdf = add_watermark(a4_water_path, pdfReader.pages[page],w,h,a4_water_w,a4_water_h)
         else:
-            page_pdf = add_watermark(ppt_water_path, pdfReader.pages[page], w, h)
+            page_pdf = add_watermark(ppt_water_path, pdfReader.pages[page], w, h,ppt_water_w,ppt_water_h)
         pdfWriter.add_page(page_pdf)
 
     with open(path[:-4]+'_1.pdf', 'wb') as target_file:

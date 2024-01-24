@@ -56,10 +56,10 @@ def delete_pdf_page_():
     num = ui.lineEdit.text()
     try:
         num = int(num)
-        path_list = ui.label_2.path
+        path_list = ui.label_pdf_path.path
         pdf_num = len(path_list)
         for path in path_list:
-            ui.label_3.setText("总共获取到{}个pdf,正在获取第{}个,正在获取:{}".format(pdf_num, num, path))
+            ui.label_6.setText("总共获取到{}个pdf,正在获取第{}个,正在获取:{}".format(pdf_num, num, path))
             if(ui.direct_checkBox.isChecked()):
                 if(get_pdf_type(path)):
                     delete_pdf_page(path,ui.label.A4path,num,True)
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     ui.setupUi(mainWindow)  # 执行类中的setupUi方法，方法的参数是第二步中创建的QMainWindow
     ui.pushButton_2.clicked.connect(get_water_pdf)
     ui.pushButton.clicked.connect(add_watermark)
-    ui.pushButton_3.clicked.connect((delete_pdf_page_))
+    ui.pushButton_3.clicked.connect(delete_pdf_page_)
     ui.pushButton_4.clicked.connect(add_water_video)
     ui.pushButton_5.clicked.connect(delete_video)
     mainWindow.show()  # 执行QMainWindow的show()方法，显示这个QMainWindow
