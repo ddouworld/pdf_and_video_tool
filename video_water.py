@@ -29,4 +29,4 @@ class video_water(QLabel):
                 else:
                     self.setText(file.toLocalFile()+"无法识别文件类型")
                     break
-        self.setText("获取的水印文件路径{}".format(self.water_path))
+        self.setText("获取的视频文件路径{}".format(self.water_path))

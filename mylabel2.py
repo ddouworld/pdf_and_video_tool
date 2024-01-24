@@ -39,5 +39,6 @@ class mylabel2(QLabel):
                 else:
                     self.setText(file.toLocalFile()+"无法识别文件类型")
                     break
-        str1 = "A4水印:"+self.A4path+"\n"+"ppt水印"+self.pptpath
+
+        str1 = "A4类型:"+self.A4path+"\n"+"ppt类型:"+self.pptpath
         self.setText(str1)

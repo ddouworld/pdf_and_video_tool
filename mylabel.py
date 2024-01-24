@@ -34,6 +34,6 @@ class mylabel(QLabel):
                     break
             pdfnum = len(self.path)
             if(pdfnum==1):
-                self.setText("获取到的水印文件为:"+self.path[0])
+                self.setText("获取到的pdf文件为:"+self.path[0])
             else:
                 self.setText("总共获取到pdf{}个pdf文件".format(pdfnum))

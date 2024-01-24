@@ -36,6 +36,12 @@ def delete_video_time_2(video_path,ad_path,delete_time):
     #os.rename(video_path, video_path[:-4] + "_完整版.mp4")
     save_apth = video_path[:-4] + "_裁剪版.mp4"
     final_clip.write_videofile(save_apth)
+
+def get_video_size(path):
+    video = VideoFileClip(path)
+    size = video.size
+    print(size)  # 获取分辨率
+    return size
 def get_img_size(path):
     file_path = path
     img = Image.open(file_path)
@@ -59,6 +65,12 @@ def get_ffmpeg_cmd(show_every_seconds, show_duration_seconds,x_offset, y_offset)
     return overlay_command
 
 def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y):
+    img_w,img_h = get_img_size(water_path)
+    video_size = get_video_size(video_path)
+    video_w = video_size[0]
+    video_h = video_size[1]
+    x = x+video_w-img_w
+    y = int(y)+int(video_h/2)
     water_temp_path = water_path[:-4] + "_temp.png"
     ffmpeg_fix = (
         FFmpeg()

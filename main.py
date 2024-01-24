@@ -56,20 +56,22 @@ def delete_pdf_page_():
     num = ui.lineEdit.text()
     try:
         num = int(num)
+        now_num = 1
         path_list = ui.label_pdf_path.path
         pdf_num = len(path_list)
         for path in path_list:
-            ui.label_6.setText("总共获取到{}个pdf,正在获取第{}个,正在获取:{}".format(pdf_num, num, path))
+            ui.label_pdf_6.setText("总共获取到{}个pdf,正在获取第{}个,正在获取:{}".format(pdf_num, now_num, path))
             if(ui.direct_checkBox.isChecked()):
                 if(get_pdf_type(path)):
-                    delete_pdf_page(path,ui.label.A4path,num,True)
+                    delete_pdf_page(path,ui.label_pdf_ad.A4path,num,True)
                 else:
-                    delete_pdf_page(path, ui.label.pptpath, num,True)
+                    delete_pdf_page(path, ui.label_pdf_ad.pptpath, num,True)
             else:
                 if (get_pdf_type(path)):
-                    delete_pdf_page(path, ui.label.A4path, num, False)
+                    delete_pdf_page(path, ui.label_pdf_ad.A4path, num, False)
                 else:
-                    delete_pdf_page(path, ui.label.pptpath, num, False)
+                    delete_pdf_page(path, ui.label_pdf_ad.pptpath, num, False)
+        now_num+=1
         QMessageBox.information(mainWindow, '信息', '完成',
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
     except:
@@ -80,11 +82,18 @@ def add_water_video():
         scale_size = ui.scale_size.text()
         scale_size = float(scale_size) #缩放比例
         water_path = ui.video_water_label.water_path
+        random_water_path = ui.video_water_label_3.water_path
         show_every_seconds = float(ui.interval_lineEdit.text())
         show_duration_seconds = float(ui.duration_lineEdit.text())
+
+
         num =1
         for video_path in ui.video_label.mp4path:
             if(ui.checkBox_2.isChecked() and ui.checkBox.isChecked()):
+                scale_size_random = ui.scale_size_2.text()
+                scale_size_random = float(scale_size_random)  # 缩放比例
+                show_every_seconds_random = float(ui.interval_lineEdit_2.text())  # 随机水印的水印间隔时间
+                show_duration_seconds_random = float(ui.duration_lineEdit_2.text())  # 随机水印的水印持续时间
                 x = int(ui.x_lineEdit.text())  # 水印的x坐标
                 y = int(ui.y_lineEdit.text())  # 水印的y坐标
                 fixed_watermarking_thread = My_Thread(mainWindow, ui, "fixed_watermarking")
@@ -94,8 +103,8 @@ def add_water_video():
 
                 random_watermarking_thread = My_Thread(mainWindow, ui, "random_watermarking")
                 random_watermarking_thread.finishSignal.connect(Change)
-                random_watermarking_thread.set_add_water_video_path(video_path[:-4]+"_1.mp4", water_path, scale_size,
-                                                                   show_every_seconds, show_duration_seconds, x, y,num)
+                random_watermarking_thread.set_add_water_video_path(video_path[:-4]+"_1.mp4", random_water_path, scale_size_random,
+                                                                   show_every_seconds_random, show_duration_seconds_random, x, y,num)
                 random_watermarking_thread.start()
             elif ui.checkBox_2.isChecked():#判断是否是固定水印
                 # w,h = get_video_dimensions(video_path)
@@ -107,12 +116,16 @@ def add_water_video():
                                                                    show_every_seconds, show_duration_seconds, x, y, num)
                 fixed_watermarking_thread.start()
             elif ui.checkBox.isChecked():
+                scale_size_random = ui.scale_size_2.text()
+                scale_size_random = float(scale_size_random)  # 缩放比例
+                show_every_seconds_random = float(ui.interval_lineEdit_2.text())  # 随机水印的水印间隔时间
+                show_duration_seconds_random = float(ui.duration_lineEdit_2.text())  # 随机水印的水印持续时间
                 x = int(ui.x_lineEdit.text())  # 水印的x坐标
                 y = int(ui.y_lineEdit.text())  # 水印的y坐标
                 random_watermarking_thread = My_Thread(mainWindow, ui, "random_watermarking")
                 random_watermarking_thread.finishSignal.connect(Change)
-                random_watermarking_thread.set_add_water_video_path(video_path, water_path, scale_size,
-                                                                    show_every_seconds, show_duration_seconds, x, y,
+                random_watermarking_thread.set_add_water_video_path(video_path, random_water_path, scale_size_random,
+                                                                    show_every_seconds_random, show_duration_seconds_random, x, y,
                                                                     num)
                 random_watermarking_thread.start()
         num+=1
@@ -127,19 +140,19 @@ def delete_video():
     try:
         delete_time = ui.lineEdit_2.text()
         delete_time = int(delete_time)
-        ad_path = ui.video_water_label.water_path
+        ad_path = ui.video_water_label_2.water_path
         num=1
-        for video_path in ui.video_label.mp4path:
+        for video_path in ui.video_label_2.mp4path:
             if ui.direct_video_checkBox.isChecked():
-                delete_vidoe_time_thread = My_Thread(mainWindow, ui, "delete_vidoe_time")
-                delete_vidoe_time_thread.finishSignal.connect(Change)
+                delete_vidoe_time_thread = My_Thread(mainWindow, ui, "delete_video_time")
+                delete_vidoe_time_thread.finishSignal.connect(Change_3)
             # 启动线程，执行线程类中run函数
                 delete_vidoe_time_thread.set_delete_video_time_path(video_path,ad_path,delete_time,num)
                 delete_vidoe_time_thread.start()
             else:
                 delete_video_time_2_thread = My_Thread(mainWindow, ui, "delete_video_time_2")  # 实例化一个线程，参数t设置为100
                 # 将线程thread的信号finishSignal和UI主线程中的槽函数Change进行连接
-                delete_video_time_2_thread.finishSignal.connect(Change)
+                delete_video_time_2_thread.finishSignal.connect(Change_3)
                 delete_video_time_2_thread.set_delete_video_time_path(video_path,ad_path,delete_time,num)
                 delete_video_time_2_thread.start()
             num+=1
@@ -152,9 +165,16 @@ def delete_video():
 def Change(msg):
         print(msg)
         ui.label_5.setText(str(msg))
+
+
 def Change_2(msg):
     print(msg)
     ui.label_3.setText(str(msg))
+
+
+def Change_3(msg):
+    print(msg)
+    ui.video_label_6.setText(str(msg))
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)  # 创建一个QApplication，也就是你要开发的应用程序
     mainWindow = QtWidgets.QMainWindow()  # 创建一个QMainWindow，用来装载你需要的各种组件、控件

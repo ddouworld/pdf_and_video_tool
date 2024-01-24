@@ -27,7 +27,7 @@
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -59,7 +59,7 @@
        <string notr="true">background:rgb(255, 255, 255)</string>
       </property>
       <property name="text">
-       <string>获取到的默认pdf为:</string>
+       <string>获取到的默认水印pdf为:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -205,6 +205,19 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
+     <widget class="QLabel" name="label_pdf_6">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>520</y>
+        <width>671</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>进度:</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -263,15 +276,15 @@
        <rect>
         <x>0</x>
         <y>180</y>
-        <width>771</width>
-        <height>81</height>
+        <width>371</width>
+        <height>101</height>
        </rect>
       </property>
       <property name="styleSheet">
        <string notr="true">background:rgb(255, 255, 255)</string>
       </property>
       <property name="text">
-       <string>将水印文件或者广告视频文件拖动到此处</string>
+       <string>将固定水印文件拖动到此处</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -464,6 +477,48 @@
        </rect>
       </property>
      </widget>
+     <widget class="video_water" name="video_water_label_3">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>180</y>
+        <width>391</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background:rgb(255, 255, 255)</string>
+      </property>
+      <property name="text">
+       <string>将随机水印文件拖动到此处</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>80</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>随机水印缩放比例:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="scale_size_2">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>80</y>
+        <width>113</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -485,14 +540,14 @@
      <widget class="QLabel" name="label_7">
       <property name="geometry">
        <rect>
-        <x>190</x>
+        <x>220</x>
         <y>130</y>
-        <width>151</width>
+        <width>91</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>从第多少秒开始添加或删除</string>
+       <string>从第多少秒开始</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_2">
@@ -518,7 +573,7 @@
        <string notr="true">background:rgb(255, 255, 255)</string>
       </property>
       <property name="text">
-       <string>将水印文件或者广告视频文件拖动到此处</string>
+       <string>将广告视频文件拖动到此处</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -541,6 +596,32 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="direct_video_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>130</y>
+        <width>79</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>删除插入</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="video_label_6">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>500</y>
+        <width>451</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>进度:</string>
       </property>
      </widget>
     </widget>
