@@ -36,6 +36,7 @@ def add_watermark():
     path_list = ui.label_2.path
     pdf_num = len(path_list)
     num = 1
+    thread_list = []
     for path in path_list:
         ui.label_3.setText("总共获取到{}个pdf,正在获取第{}个,正在获取:{}".format(pdf_num,num,path))
         # if(get_pdf_type(path)):
@@ -47,6 +48,8 @@ def add_watermark():
         add_watermark_thread.finishSignal.connect(Change_2)
         add_watermark_thread.set_add_watermark_path(path, ui.label.A4path,ui.label.pptpath,num)
         add_watermark_thread.start()
+        thread_list.append(add_watermark_thread)
+        # add_watermark_thread.wait()
         # ui.label_3.setText(path+"获取完成")
 
         num+=1
@@ -56,6 +59,8 @@ def delete_pdf_page_():
     num = ui.lineEdit.text()
     try:
         num = int(num)
+        delete_num = ui.delete_num_lineEdit.text()
+        delete_num = int(delete_num)
         now_num = 1
         path_list = ui.label_pdf_path.path
         pdf_num = len(path_list)
@@ -63,9 +68,9 @@ def delete_pdf_page_():
             ui.label_pdf_6.setText("总共获取到{}个pdf,正在获取第{}个,正在获取:{}".format(pdf_num, now_num, path))
             if(ui.direct_checkBox.isChecked()):
                 if(get_pdf_type(path)):
-                    delete_pdf_page(path,ui.label_pdf_ad.A4path,num,True)
+                    delete_pdf_page(path,ui.label_pdf_ad.A4path,num,delete_num,True)
                 else:
-                    delete_pdf_page(path, ui.label_pdf_ad.pptpath, num,True)
+                    delete_pdf_page(path, ui.label_pdf_ad.pptpath,num,delete_num,True)
             else:
                 if (get_pdf_type(path)):
                     delete_pdf_page(path, ui.label_pdf_ad.A4path, num, False)
@@ -79,6 +84,7 @@ def delete_pdf_page_():
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 def add_water_video():
     try:
+        thread_list = []
         scale_size = ui.scale_size.text()
         scale_size = float(scale_size) #缩放比例
         water_path = ui.video_water_label.water_path
@@ -100,12 +106,17 @@ def add_water_video():
                 fixed_watermarking_thread.finishSignal.connect(Change)
                 fixed_watermarking_thread.set_add_water_video_path(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y,num)
                 fixed_watermarking_thread.start()
+                thread_list.append(fixed_watermarking_thread)
+                # fixed_watermarking_thread.wait()
+
 
                 random_watermarking_thread = My_Thread(mainWindow, ui, "random_watermarking")
                 random_watermarking_thread.finishSignal.connect(Change)
                 random_watermarking_thread.set_add_water_video_path(video_path[:-4]+"_1.mp4", random_water_path, scale_size_random,
                                                                    show_every_seconds_random, show_duration_seconds_random, x, y,num)
                 random_watermarking_thread.start()
+                thread_list.append(random_watermarking_thread)
+                # random_watermarking_thread.wait()
             elif ui.checkBox_2.isChecked():#判断是否是固定水印
                 # w,h = get_video_dimensions(video_path)
                 x = int(ui.x_lineEdit.text())  # 水印的x坐标
@@ -115,6 +126,8 @@ def add_water_video():
                 fixed_watermarking_thread.set_add_water_video_path(video_path, water_path, scale_size,
                                                                    show_every_seconds, show_duration_seconds, x, y, num)
                 fixed_watermarking_thread.start()
+                thread_list.append(fixed_watermarking_thread)
+                # fixed_watermarking_thread.wait()
             elif ui.checkBox.isChecked():
                 scale_size_random = ui.scale_size_2.text()
                 scale_size_random = float(scale_size_random)  # 缩放比例
@@ -128,6 +141,8 @@ def add_water_video():
                                                                     show_every_seconds_random, show_duration_seconds_random, x, y,
                                                                     num)
                 random_watermarking_thread.start()
+                thread_list.append(random_watermarking_thread)
+                # random_watermarking_thread.wait()
         num+=1
         QMessageBox.information(mainWindow, '信息', '正在添加水印',
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
@@ -138,23 +153,30 @@ def add_water_video():
 def delete_video():
     print("加广告")
     try:
+        thread_list = []
         delete_time = ui.lineEdit_2.text()
         delete_time = int(delete_time)
+        need_delete_time = ui.delete_s_lineEdit.text()
+        need_delete_time = int(need_delete_time)
         ad_path = ui.video_water_label_2.water_path
         num=1
         for video_path in ui.video_label_2.mp4path:
             if ui.direct_video_checkBox.isChecked():
-                delete_vidoe_time_thread = My_Thread(mainWindow, ui, "delete_video_time")
-                delete_vidoe_time_thread.finishSignal.connect(Change_3)
+                delete_video_time_thread = My_Thread(mainWindow, ui, "delete_video_time")
+                delete_video_time_thread.finishSignal.connect(Change_3)
             # 启动线程，执行线程类中run函数
-                delete_vidoe_time_thread.set_delete_video_time_path(video_path,ad_path,delete_time,num)
-                delete_vidoe_time_thread.start()
+                delete_video_time_thread.set_delete_video_time_path(video_path,ad_path,delete_time,num,need_delete_time)
+                delete_video_time_thread.start()
+                thread_list.append(delete_video_time_thread)
+                # delete_video_time_thread.wait()
             else:
                 delete_video_time_2_thread = My_Thread(mainWindow, ui, "delete_video_time_2")  # 实例化一个线程，参数t设置为100
                 # 将线程thread的信号finishSignal和UI主线程中的槽函数Change进行连接
                 delete_video_time_2_thread.finishSignal.connect(Change_3)
                 delete_video_time_2_thread.set_delete_video_time_path(video_path,ad_path,delete_time,num)
                 delete_video_time_2_thread.start()
+                thread_list.append(delete_video_time_thread)
+                # delete_video_time_2_thread.wait()
             num+=1
         QMessageBox.information(mainWindow, '信息', '正在添加广告',
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)

@@ -5,12 +5,12 @@ import os
 from PIL import Image
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 #需要进行剪裁
-def delete_video_time(video_path,ad_path,delete_time):
+def delete_video_time(video_path,ad_path,delete_time,need_delete_time=600):
     vidoe_duration = get_video_duration(video_path)
     if delete_time>vidoe_duration:
         return -1
     clip1 = VideoFileClip(video_path).subclip(0, delete_time)
-    delete_time_2 = min(vidoe_duration,delete_time+600)
+    delete_time_2 = min(vidoe_duration,delete_time+need_delete_time)
     if(delete_time_2<vidoe_duration):
         clip2 = VideoFileClip(video_path).subclip(delete_time_2, vidoe_duration)
         ad_video = VideoFileClip(ad_path).resize(clip1.size)
@@ -77,7 +77,7 @@ def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show
         .option("y")
         .input(water_path)
         .output(water_temp_path,
-                vf="format=rgba,scale=iw*{}:-1".format(scale_size), q="0")
+                vf="format=rgba,scale={w}:{h}".format(w=video_w*scale_size,h=video_h*scale_size), q="0")
     )
 
     @ffmpeg_fix.on("completed")
@@ -102,6 +102,9 @@ def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show
 def random_watermarking(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,is_fix=False):
 
     #cmd = 'ffmpeg -i input.mp4 -i water.jpg -filter_complex "overlay='if(ld(0), if(lte(mod(t/5,1),0.05),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(W-w));NAN)':'if(ld(0), if(lte(mod(t/5,1),0.05),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(H-h));NAN)'" temp.mp4'
+    video_size = get_video_size(video_path)
+    video_w = video_size[0]
+    video_h = video_size[1]
     water_temp_path = water_path[:-4]+"_temp.png"
     t1 = show_every_seconds+show_duration_seconds
     t2 = show_every_seconds
@@ -110,7 +113,7 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
         .option("y")
         .input(water_path)
         .output(water_temp_path,
-                vf="format=rgba,scale=iw*{}:-1".format(scale_size),q="0")
+                vf="format=rgba,scale={w}:{h}".format(w=video_w*scale_size,h=video_h*scale_size),q="0")
     )
     @ffmpeg1.on("completed")
     def on_completed():

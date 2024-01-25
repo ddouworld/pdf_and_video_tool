@@ -131,8 +131,8 @@
      <widget class="QCheckBox" name="direct_checkBox">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>140</y>
+        <x>460</x>
+        <y>90</y>
         <width>79</width>
         <height>20</height>
        </rect>
@@ -144,21 +144,21 @@
      <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
-        <x>160</x>
-        <y>170</y>
-        <width>121</width>
+        <x>150</x>
+        <y>120</y>
+        <width>131</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>删除或要插入的的页数</string>
+       <string>删除或要插入的的页数:</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>170</y>
+        <x>290</x>
+        <y>120</y>
         <width>161</width>
         <height>20</height>
        </rect>
@@ -216,6 +216,32 @@
       </property>
       <property name="text">
        <string>进度:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="delete_page_num">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>150</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>往后删除多少页:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="delete_num_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>150</y>
+        <width>161</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>10</string>
       </property>
      </widget>
     </widget>
@@ -622,6 +648,29 @@
       </property>
       <property name="text">
        <string>进度:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>160</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>删除多少秒的视频:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="delete_s_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>160</y>
+        <width>113</width>
+        <height>20</height>
+       </rect>
       </property>
      </widget>
     </widget>

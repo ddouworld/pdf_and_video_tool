@@ -1,6 +1,7 @@
 import time
 from video_tool.tool import *
 from ffmpeg import FFmpeg
+import os
 def random_watermarking(video_path,water_path,scale_size):
     #cmd = 'ffmpeg -i input.mp4 -i water.png -filter_complex "overlay='if(ld(0), if(lte(mod(t/5,1),0.05),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(W-w));NAN)':'if(ld(0), if(lte(mod(t/5,4),0.05),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(H-h));NAN)'" -c:a copy temp.mp4'
     water_temp_path = water_path[:-4]+"_temp.png"
@@ -53,8 +54,8 @@ def get_ffmpeg_cmd(video_path,water_path,show_every_seconds, show_duration_secon
 # get_ffmpeg_cmd("input.mp4","water_temp.png",3,2)
 # add_watermark(3,2)
 # random_watermarking("input.mp4","water.png",0.5)
-cmd ="""'ffmpeg -i input.mp4 -i water.png -filter_complex "overlay='if(ld(0), if(lt(mod(t,5),2),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(W-w));NAN)':'if(ld(0), if(lt(mod(t,5),2),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(H-h));NAN)'" -c:acopy temp.mp4'"""
-print(cmd)
+# cmd ="""'ffmpeg -i input.mp4 -i water.png -filter_complex "overlay='if(ld(0), if(lt(mod(t,5),2),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(W-w));NAN)':'if(ld(0), if(lt(mod(t,5),2),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(H-h));NAN)'" -c:acopy temp.mp4'"""
+# print(cmd)
 
 def random_watermarking1(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds):
     #cmd = 'ffmpeg -i input.mp4 -i water.jpg -filter_complex "overlay='if(ld(0), if(lte(mod(t/5,1),0.05),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(W-w));NAN)':'if(ld(0), if(lte(mod(t/5,1),0.05),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(H-h));NAN)'" temp.mp4'
@@ -110,3 +111,12 @@ def delete_vidoe_time_2(video_path,ad_path,save_apth,delete_time):
     ad_video = VideoFileClip(ad_path).resize(clip1.size)
     final_clip = concatenate_videoclips([clip1,ad_video,clip2])
     final_clip.write_videofile(save_apth)
+def Split_pdf(pdf_path,num):
+    path = os.getcwd()
+    pdf_name = pdf_path.split("\\")[-1][:-4]
+    if not os.path.exists(path+"/temp/"+pdf_name):
+        os.makedirs(path+"/temp/"+pdf_name)
+    cmd = r'pdftk.exe "{pdf_path}" burst output "{path}\temp\{pdf_name}\page%0{num}d.pdf"'.format(pdf_path=pdf_path,path=path,pdf_name=pdf_name,num=num)
+    os.system(cmd)
+# Split_pdf(r"D:\tools\python_tool\dist\测试PPT.pdf",4)
+print("{:0>5d}".format(5))
