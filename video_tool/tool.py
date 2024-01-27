@@ -64,14 +64,15 @@ def get_ffmpeg_cmd(show_every_seconds, show_duration_seconds,x_offset, y_offset)
     overlay_command = f"overlay=enable='{enable_expression}':x={x_offset}:y={y_offset}"
     return overlay_command
 
-def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y):
-    img_w,img_h = get_img_size(water_path)
+def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y,random_data):
+
+
+    water_temp_path = water_path[:-4] + "_temp.png"
+    r_x = x
+    r_y = y
     video_size = get_video_size(video_path)
     video_w = video_size[0]
     video_h = video_size[1]
-    x = x+video_w-img_w
-    y = int(y)+int(video_h/2)
-    water_temp_path = water_path[:-4] + "_temp.png"
     ffmpeg_fix = (
         FFmpeg()
         .option("y")
@@ -83,6 +84,10 @@ def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show
     @ffmpeg_fix.on("completed")
     def on_completed():
         print("completed")
+        img_w, img_h = get_img_size(water_temp_path)
+
+        x = r_x + video_w - img_w
+        y = int(r_y) + int(video_h / 2)
         video_path_complete = video_path[:-4] + "_1.mp4"
         ffmpeg_fix_1 = (
             FFmpeg()
@@ -96,6 +101,13 @@ def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show
         @ffmpeg_fix_1.on("completed")
         def on_completed():
             print("固定水印完成")
+            if(random_data!=""):
+                random_water_path = random_data['random_water_path']
+                scale_size = random_data['scale_size']
+                show_every_seconds = random_data['show_every_seconds']
+                show_duration_seconds = random_data['show_duration_seconds']
+                random_watermarking(video_path[:-4]+"_1.mp4", random_water_path, scale_size, show_every_seconds, show_duration_seconds,
+                                    True)
 
         ffmpeg_fix_1.execute()
     ffmpeg_fix.execute()
@@ -121,7 +133,7 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
         if(is_fix==False):
             video_path_complete = video_path[:-4]+"_1.mp4"
         else:
-            video_path_complete = video_path[:4]+"_2.mp4"
+            video_path_complete = video_path[:-4]+"_2.mp4"
         ffmpeg = (
             FFmpeg()
             .option("y")
@@ -131,6 +143,8 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
         )
         @ffmpeg.on("completed")
         def on_completed():
-            print("完成")
+            print("随机水印完成")
+            os.remove(video_path)
+
         ffmpeg.execute()
     ffmpeg1.execute()

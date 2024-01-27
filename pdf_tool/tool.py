@@ -1,15 +1,34 @@
 import PyPDF2
 import os
 import shutil
-
+import subprocess
 def PDFtk_add_watermark(pdf_path,water_path,num):
     pdf_name = pdf_path.split("\\")[:-1]
     pdf_name = '\\'.join(pdf_name)
     # pdf_file_path = os.getcwd()+"\\temp\\"+pdf_name
     cmd = f'pdftk.exe "{pdf_path}" multistamp "{water_path}" output "{pdf_name}\\{num}_water.pdf"'
     # print(cmd)
-    os.system(cmd)
+    # os.system(cmd)
+    p = subprocess.Popen(cmd)
+    p.wait()
+    # print(p.returncode )
 def Merge_pdf(file_path,original_pdf,num):
+    if(num==1):
+        pdf_name = original_pdf.split("/")[-1][:-4]
+        new_pdf_name = pdf_name + "_1.pdf"
+        if os.path.exists(file_path + "\\" + new_pdf_name):
+            os.remove(file_path + "\\" + new_pdf_name)
+        os.rename(file_path+"\{}_water.pdf".format(1), file_path + "\\" + new_pdf_name)
+        source = file_path + "\\" + new_pdf_name
+        destination = os.path.dirname(original_pdf)
+        try:
+            if os.path.exists(destination+"\\"+new_pdf_name):
+                os.remove(destination+"\\"+new_pdf_name)
+            shutil.copy(source, destination)
+            return
+        except:
+            pass
+            return
     #先获取原始pdf的名字
     pdf_name = original_pdf.split("/")[-1][:-4]
     new_pdf_name = pdf_name+"_1.pdf"
@@ -19,14 +38,16 @@ def Merge_pdf(file_path,original_pdf,num):
     temp_num = 1
     temp_name = file_path+"\{}_Merge.pdf".format(str(temp_num))
     cmd = 'pdftk.exe "{pdf_1}" "{pdf_2}" output "{new_pdf}"'.format(pdf_1=pdf_1,pdf_2=pdf_2,new_pdf=temp_name)
-    os.system(cmd)
+    p = subprocess.Popen(cmd)
+    p.wait()
     for page in range(3,num+1):
             pdf_1 = temp_name
             pdf_2 = file_path +"\{}_water.pdf".format(page)
             temp_num+=1
             temp_name = file_path+"\{}_Merge.pdf".format(str(temp_num))
             cmd = 'pdftk.exe "{pdf_1}" "{pdf_2}" output "{new_pdf}"'.format(pdf_1=pdf_1, pdf_2=pdf_2, new_pdf=temp_name)
-            os.system(cmd)
+            p2 = subprocess.Popen(cmd)
+            p2.wait()
     os.rename(file_path+"\{}_Merge.pdf".format(str(temp_num)),file_path+"\\"+new_pdf_name)
     source = file_path+"\\"+new_pdf_name
     destination = os.path.dirname(original_pdf)
@@ -100,7 +121,8 @@ def Split_pdf(pdf_path,num):
     if not os.path.exists(path+"/temp/"+pdf_name):
         os.makedirs(path+"/temp/"+pdf_name)
     cmd = r'pdftk.exe "{pdf_path}" burst output "{path}\temp\{pdf_name}\page%0{num}d.pdf"'.format(pdf_path=pdf_path,path=path,pdf_name=pdf_name,num=num)
-    os.system(cmd)
+    p = subprocess.Popen(cmd)
+    p.wait()
 def get_pdf_size(path,is_page=False):
     if is_page:
         page_1 = path
