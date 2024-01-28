@@ -119,4 +119,16 @@ def Split_pdf(pdf_path,num):
     cmd = r'pdftk.exe "{pdf_path}" burst output "{path}\temp\{pdf_name}\page%0{num}d.pdf"'.format(pdf_path=pdf_path,path=path,pdf_name=pdf_name,num=num)
     os.system(cmd)
 # Split_pdf(r"D:\tools\python_tool\dist\测试PPT.pdf",4)
-print("{:0>5d}".format(5))
+# print("{:0>5d}".format(5))
+a = ['ffmpeg', '-y', '-i', '"D:/tools/python_tool/test/测试文档/测试文档/视频/待处理/3 待处理_720P (2).mp4"', '-i', '"D:/tools/python_tool/test/测试文档/测试文档/视频/固定水印_temp.png"', '-c:a', 'copy', '-filter_complex', '"overlay=x=if(lt(mod(t,20),10),10,NAN ):y=10"', '"D:/tools/python_tool/test/测试文档/测试文档/视频/待处理/3 待处理_720P (2)_1.mp4"']
+for i in a:
+    print(i,end=" ")
+#ffmpeg -y -i "D:/tools/python_tool/test/测试文档/测试文档/视频/待处理/3 待处理_720P (2).mp4" -i "D:/tools/python_tool/test/测试文档/测试文档/视频/固定水印_temp.png" -c:a copy -filter_complex overlay=x=1152:y=360:enable='between(t,0,15)*mod(t,15)>5' "D:/tools/python_tool/test/测试文档/测试文档/视频/待处理/3 待处理_720P (2)_1.mp4"
+#command = f'ffmpeg -i "{video_file}" -vf "movie={watermark_file} [watermark]; [in][watermark] overlay=x=10:y=10:enable=\'between(t,0,{cycle_duration})*mod(t,{cycle_duration})>{hidden_duration}\'" -c:a copy "{output_file}"'
+
+#ffmpeg -y -t 60 -i input.mp4 -i logo1.png -i logo2.png -filter_complex "overlay=x=if(lt(mod(t\,20)\,10)\,10\,NAN ):y=10,overlay=x=if(gt(mod(t\,20)\,10)\,W-w-10\,NAN ) :y=10" output.mp4
+
+
+#ffmpeg -y -t 60 -i input.mp4 -i logo2.png -filter_complex "overlay=x=if(lt(mod(t\,20)\,10)\,10\,NAN ):y=10,overlay=x=if(gt(mod(t\,20)\,10)\,W-w-10\,NAN ) :y=10" output.mp4
+
+#ffmpeg -y -i "D:/tools/python_tool/test/测试文档/测试文档/视频/待处理/3 待处理_720P (2).mp4" -i "D:/tools/python_tool/test/测试文档/测试文档/视频/固定水印_temp.png" -c:a copy -filter_complex "overlay=x=if(lt(mod(t\,20)\,10)\,10\,NAN ):y=10" "D:/tools/python_tool/test/测试文档/测试文档/视频/待处理/3 待处理_720P (2)_1.mp4"

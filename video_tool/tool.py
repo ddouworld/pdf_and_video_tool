@@ -60,8 +60,12 @@ def get_video_duration(path):
 def get_ffmpeg_cmd(show_every_seconds, show_duration_seconds,x_offset, y_offset):
     # FFmpeg命令构建，假设水印始终位于右下角
     # 根据show_every_seconds和show_duration_seconds调整时间表达式
-    enable_expression = f"gte(t,{show_every_seconds})*lt(mod(t,{show_every_seconds}),{show_duration_seconds})"
-    overlay_command = f"overlay=enable='{enable_expression}':x={x_offset}:y={y_offset}"
+    #enable_expression = f"gte(t,{show_every_seconds})*lt(mod(t,{show_every_seconds}),{show_duration_seconds})"
+    cycle_duration =show_duration_seconds+show_every_seconds
+    hidden_duration = show_every_seconds
+    #enable_expression = f'between(t,0,{cycle_duration})*mod(t,{cycle_duration})>{hidden_duration}\'
+    # overlay_command = f"overlay=enable='{enable_expression}':x={x_offset}:y={y_offset}"
+    overlay_command = f"overlay=x=if(lt(mod(t,{cycle_duration}),{show_duration_seconds}),{x_offset},NAN):y={y_offset},overlay=x=if(gt(mod(t,{cycle_duration}),{show_duration_seconds}),{x_offset},NAN ) :y={y_offset}"
     return overlay_command
 
 def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y,random_data):
@@ -84,18 +88,21 @@ def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show
     @ffmpeg_fix.on("completed")
     def on_completed():
         print("completed")
+
+        cycle_duration = int(show_duration_seconds + show_every_seconds)
         img_w, img_h = get_img_size(water_temp_path)
 
         x = r_x + video_w - img_w
         y = int(r_y) + int(video_h / 2)
         video_path_complete = video_path[:-4] + "_1.mp4"
+        #get_ffmpeg_cmd(show_every_seconds, show_duration_seconds,x,y)
         ffmpeg_fix_1 = (
             FFmpeg()
             .option("y")
             .input(video_path)
             .input(water_temp_path)
             .output(video_path_complete,
-                    {"c:a": "copy","filter_complex":get_ffmpeg_cmd(show_every_seconds, show_duration_seconds,x,y)})
+                    {"c:a": "copy","filter_complex":"overlay='x=if(gt(mod(t,{cycle_duration}),{show_duration_seconds}),{x},NAN ):y={y}'".format(cycle_duration=cycle_duration,show_duration_seconds=int(show_duration_seconds),x=x,y=y)})
         )
 
         @ffmpeg_fix_1.on("completed")
@@ -144,7 +151,8 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
         @ffmpeg.on("completed")
         def on_completed():
             print("随机水印完成")
-            os.remove(video_path)
+            if(is_fix):
+                os.remove(video_path)
 
         ffmpeg.execute()
     ffmpeg1.execute()
