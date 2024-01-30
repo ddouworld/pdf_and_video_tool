@@ -1,5 +1,7 @@
 # from moviepy.editor import VideoFileClip
 # import moviepy.editor as mp
+import time
+
 from ffmpeg import FFmpeg
 import os
 from PIL import Image
@@ -40,7 +42,7 @@ def delete_video_time_2(video_path,ad_path,delete_time):
 def get_video_size(path):
     video = VideoFileClip(path)
     size = video.size
-    print(size)  # 获取分辨率
+    # print(size)  # 获取分辨率
     return size
 def get_img_size(path):
     file_path = path
@@ -87,7 +89,7 @@ def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show
 
     @ffmpeg_fix.on("completed")
     def on_completed():
-        print("completed")
+        print("固定水印,开始运行")
 
         cycle_duration = int(show_duration_seconds + show_every_seconds)
         img_w, img_h = get_img_size(water_temp_path)
@@ -102,7 +104,7 @@ def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show
             .input(video_path)
             .input(water_temp_path)
             .output(video_path_complete,
-                    {"c:a": "copy","filter_complex":"overlay='x=if(gt(mod(t,{cycle_duration}),{show_duration_seconds}),{x},NAN ):y={y}'".format(cycle_duration=cycle_duration,show_duration_seconds=int(show_duration_seconds),x=x,y=y)})
+                    {"c:a": "copy","filter_complex":"overlay='x=if(gt(mod(t,{cycle_duration}),{show_every_seconds}),{x},NAN ):y={y}'".format(cycle_duration=cycle_duration,show_every_seconds=int(show_every_seconds),x=x,y=y)})
         )
 
         @ffmpeg_fix_1.on("completed")
@@ -125,8 +127,8 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
     video_w = video_size[0]
     video_h = video_size[1]
     water_temp_path = water_path[:-4]+"_temp.png"
-    t1 = show_every_seconds+show_duration_seconds
-    t2 = show_every_seconds
+    t1 = int(show_every_seconds+show_duration_seconds)
+    t2 = int(show_every_seconds)
     ffmpeg1 = (
         FFmpeg()
         .option("y")
@@ -136,7 +138,7 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
     )
     @ffmpeg1.on("completed")
     def on_completed():
-        print("completed")
+        print("随机水印,开始运行")
         if(is_fix==False):
             video_path_complete = video_path[:-4]+"_1.mp4"
         else:
@@ -151,8 +153,13 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
         @ffmpeg.on("completed")
         def on_completed():
             print("随机水印完成")
-            if(is_fix):
-                os.remove(video_path)
+            # if(is_fix):
+            #     try:
+            #         time.sleep(1)
+            #         print("尝试删除缓存")
+            #         os.remove(video_path)
+            #     except:
+            #         print("视频占用中，删除失败")
 
         ffmpeg.execute()
     ffmpeg1.execute()

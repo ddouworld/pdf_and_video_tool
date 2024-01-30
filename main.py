@@ -8,8 +8,8 @@ from test import Ui_MainWindow,QtWidgets
 import sys
 from file.file import *
 from pdf_tool.tool import *
-from video_tool.tool import *
-
+# from video_tool.tool import *
+from config import *
 add_water_video_thread_list = []
 add_watermark_thread_list = []
 delete_pdf_page_list = []
@@ -243,6 +243,15 @@ def Change_video(msg):
         if ui.progressBar_3.maximum() == int(miValue) + 1:
             global add_water_video_thread_list
             add_water_video_thread_list = []
+            if msg == '1':
+                mp4_path_list = ui.video_label.mp4path
+                for video_path in mp4_path_list :
+                    try:
+                        time.sleep(1)
+                        print("尝试删除缓存")
+                        os.remove(video_path[:-4] + "_1.mp4")
+                    except:
+                        print("视频占用中，删除失败")
 
 
 def Change_pdf(num):
@@ -269,15 +278,72 @@ def Change_video_ad(msg):
         global delete_video_thread_list
         delete_video_thread_list = []
     # ui.video_label_6.setText(str(msg))
+def close_event(event):
+    # QMessageBox.information(mainWindow, '信息', '是否保存刚刚输入的数据',
+    #                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    pdf_line = ui.lineEdit.text()
+    pdf_delete_num = ui.delete_num_lineEdit.text()
+    pdf_ad_ppt = ui.label_pdf_ad.pptpath
+    pdf_ad_a4 = ui.label_pdf_ad.A4path
+
+    video_x = ui.x_lineEdit.text()
+    video_y = ui.y_lineEdit.text()
+    scale_size = ui.scale_size.text()
+    interval = ui.interval_lineEdit.text()
+    duration = ui.duration_lineEdit.text()
+    video_water = ui.video_water_label.water_path
+    video_water_3 = ui.video_water_label_3.water_path
+
+    scale_size_2 = ui.scale_size.text()
+    interval_2 = ui.interval_lineEdit.text()
+    duration_2 = ui.duration_lineEdit.text()
+    video_ad_line = ui.lineEdit_2.text()
+    video_ad_delete = ui.delete_s_lineEdit.text()
+    video_ad_water = ui.video_water_label_2.water_path
+    data = {"pdf_line":pdf_line,"pdf_delete_num":pdf_delete_num,"pdf_ad_ppt":pdf_ad_ppt,"pdf_ad_a4":pdf_ad_a4,"video_x":video_x,"video_y":video_y,"scale_size":scale_size,"interval":interval,"duration":duration,"video_water":video_water,"video_water_3":video_water_3,"scale_size_2":scale_size_2,"interval_2":interval_2,"duration_2":duration_2,"video_ad_line":video_ad_line,"video_ad_delete":video_ad_delete,"video_ad_water":video_ad_water}
+    config = Config()
+    config.set_config(data)
+
+def set_config():
+    config = Config()
+    data = config.get_config()
+    if(data!=''):
+        ui.lineEdit.setText(data['pdf_line'])
+        ui.delete_num_lineEdit.setText(data['pdf_delete_num'])
+        if data['pdf_ad_ppt']!="":
+            ui.label_pdf_ad.setText(data['pdf_ad_ppt'])
+        else:
+            ui.label_pdf_ad.setText(data['pdf_ad_a4'])
+        ui.x_lineEdit.setText(data['video_x'])
+        ui.y_lineEdit.setText(data['video_y'])
+        ui.scale_size.setText(data['scale_size'])
+        ui.interval_lineEdit.setText(data['interval'])
+        ui.duration_lineEdit.setText(data['duration'])
+        ui.video_water_label.setText(data['video_water'])
+        ui.video_water_label_3.setText(data['video_water_3'])
+        ui.video_water_label.water_path = data['video_water']
+        ui.video_water_label_3.water_path = data['video_water_3']
+
+
+        ui.scale_size_2.setText(data['scale_size_2'])
+        ui.interval_lineEdit_2.setText(data['interval_2'])
+        ui.duration_lineEdit_2.setText(data['duration_2'])
+        ui.lineEdit_2.setText(data['video_ad_line'])
+        ui.delete_s_lineEdit.setText(data['video_ad_delete'])
+        ui.video_water_label_2.setText(data['video_ad_water'])
+        ui.video_water_label_2.water_path = data['video_ad_water']
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)  # 创建一个QApplication，也就是你要开发的应用程序
     mainWindow = QtWidgets.QMainWindow()  # 创建一个QMainWindow，用来装载你需要的各种组件、控件
     ui = Ui_MainWindow()  # ui是你创建的ui类的实例化对象，这里调用的便是刚才生成的register.py中的Ui_MainWindow类
     ui.setupUi(mainWindow)  # 执行类中的setupUi方法，方法的参数是第二步中创建的QMainWindow
+    set_config()
     ui.pushButton_2.clicked.connect(get_water_pdf)
     ui.pushButton.clicked.connect(add_watermark)
     ui.pushButton_3.clicked.connect(delete_pdf_page_)
     ui.pushButton_4.clicked.connect(add_water_video)
     ui.pushButton_5.clicked.connect(delete_video)
     mainWindow.show()  # 执行QMainWindow的show()方法，显示这个QMainWindow
+    mainWindow.closeEvent =close_event
     sys.exit(app.exec())  # 使用exit()或者点击关闭按钮退出QApplication

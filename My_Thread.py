@@ -63,10 +63,12 @@ class My_Thread(QThread):
             # self.finishSignal.emit("固定水印:正在处理第{}个视频".format(self.num))
             if self.random_data!="":
                 self.fixed_watermarking(self.video_path,self.water_path,self.scale_size,self.show_every_seconds, self.show_duration_seconds,self.x,self.y,self.random_data)
+                self.finishSignal.emit("1")
             else:
                 self.fixed_watermarking(self.video_path, self.water_path, self.scale_size, self.show_every_seconds,
                                         self.show_duration_seconds, self.x, self.y, "")
-            self.finishSignal.emit("固定水印:第{}个视频处理完成".format(self.num))
+                self.finishSignal.emit("2")
+
         elif self.fun_name=="random_watermarking":
             # self.finishSignal.emit("随机添加水印:正在处理第{}个视频".format(self.num))
             random_watermarking(self.video_path, self.water_path, self.scale_size, self.show_every_seconds,
