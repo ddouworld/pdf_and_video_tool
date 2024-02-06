@@ -75,10 +75,16 @@ class My_Thread(QThread):
                                self.show_duration_seconds)
             self.finishSignal.emit("随机添加水印:第{}个视频处理完成".format(self.num))
         elif self.fun_name == 'delete_pdf_page_a4':
-            self.delete_pdf_page(self.pdf_path,self.a4_ad_path,self.num, self.delete_num,self.is_insertion)
+            try:
+                self.delete_pdf_page(self.pdf_path,self.a4_ad_path,self.num, self.delete_num,self.is_insertion)
+            except:
+                pass
             self.finishSignal.emit("")
         elif self.fun_name == 'delete_pdf_page_ppt':
-            self.delete_pdf_page(self.pdf_path, self.ppt_ad_path, self.num, self.delete_num,self.is_insertion)
+            try:
+                self.delete_pdf_page(self.pdf_path, self.ppt_ad_path, self.num, self.delete_num,self.is_insertion)
+            except:
+                pass
             self.finishSignal.emit("")
         elif self.fun_name == 'add_watermark':
             self.add_watermark_2(self.pdf_path,self.a4path,self.ppt_path)

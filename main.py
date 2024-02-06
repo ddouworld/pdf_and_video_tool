@@ -1,5 +1,4 @@
 import os
-from concurrent.futures import ThreadPoolExecutor
 from PyQt6.QtWidgets import (
     QApplication, QDialog, QPushButton, QHBoxLayout, QMessageBox,QMainWindow
 )
@@ -8,7 +7,6 @@ from test import Ui_MainWindow,QtWidgets
 import sys
 from file.file import *
 from pdf_tool.tool import *
-# from video_tool.tool import *
 from config import *
 add_water_video_thread_list = []
 add_watermark_thread_list = []
@@ -20,7 +18,6 @@ def get_water_pdf():
         path =path+'\\water_pdf'
         print(path)
         if os.path.exists(path):
-            # print("存在")
             pdf_list = get_dir(path)
             str1 = ""
             for pdf in pdf_list:
@@ -50,12 +47,6 @@ def add_watermark():
     ui.progressBar.setValue(0)
     ui.progressBar.setRange(0, pdf_num)
     for path in path_list:
-        #ui.label_3.setText("总共获取到{}个pdf,正在获取第{}个,正在获取:{}".format(pdf_num,num,path))
-        # if(get_pdf_type(path)):
-        #     add_watermark_2(path,ui.label.A4path)
-        # else:
-        #     add_watermark_2(path, ui.label.pptpath)
-        # add_watermark_2(path, ui.label.A4path,ui.label.pptpath)
         add_watermark_thread = My_Thread(mainWindow, ui, "add_watermark")
         add_watermark_thread.finishSignal.connect(Change_pdf)
         add_watermark_thread.set_add_watermark_path(path, ui.label.A4path,ui.label.pptpath,num)
@@ -78,20 +69,17 @@ def delete_pdf_page_():
         ui.progressBar_2.setValue(0)
         delete_num = ui.delete_num_lineEdit.text()
         delete_num = int(delete_num)
-        # now_num = 1
         path_list = ui.label_pdf_path.path
         pdf_num = len(path_list)
         ui.progressBar_2.setRange(0,pdf_num)
         for path in path_list:
-            #ui.label_pdf_6.setText("总共获取到{}个pdf,正在获取第{}个,正在获取:{}".format(pdf_num, now_num, path))
-            if(ui.direct_checkBox.isChecked()):
+            if(not ui.direct_checkBox.isChecked()):
                 if(get_pdf_type(path)):
                     delete_pdf_page_thread = My_Thread(mainWindow, ui, "delete_pdf_page_a4")
                     delete_pdf_page_thread.finishSignal.connect(Change_delete_pdf)
                     delete_pdf_page_thread.set_delete_pdf_page_path(path, ui.label_pdf_ad.A4path, ui.label_pdf_ad.pptpath,num,delete_num,True)
                     delete_pdf_page_thread.start()
                     thread_list.append(delete_pdf_page_thread)
-                    #delete_pdf_page(path,ui.label_pdf_ad.A4path,num,delete_num,True)
                 else:
                     delete_pdf_page_thread = My_Thread(mainWindow, ui, "delete_pdf_page_ppt")
                     delete_pdf_page_thread.finishSignal.connect(Change_delete_pdf)
@@ -99,7 +87,6 @@ def delete_pdf_page_():
                                                                     delete_num,True)
                     delete_pdf_page_thread.start()
                     thread_list.append(delete_pdf_page_thread)
-                    # delete_pdf_page(path, ui.label_pdf_ad.pptpath,num,delete_num,True)
             else:
                 if (get_pdf_type(path)):
                     delete_pdf_page_thread = My_Thread(mainWindow, ui, "delete_pdf_page_a4")
@@ -108,7 +95,7 @@ def delete_pdf_page_():
                                                                     delete_num, False)
                     delete_pdf_page_thread.start()
                     thread_list.append(delete_pdf_page_thread)
-                    # delete_pdf_page(path, ui.label_pdf_ad.A4path, num, False)
+
                 else:
                     delete_pdf_page_thread = My_Thread(mainWindow, ui, "delete_pdf_page_ppt")
                     delete_pdf_page_thread.finishSignal.connect(Change_delete_pdf)
@@ -116,8 +103,6 @@ def delete_pdf_page_():
                                                                     delete_num, False)
                     delete_pdf_page_thread.start()
                     thread_list.append(delete_pdf_page_thread)
-                    # delete_pdf_page(path, ui.label_pdf_ad.pptpath, num, False)
-        # now_num+=1
         QMessageBox.information(mainWindow, '信息', '完成',
                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
     except:
@@ -160,13 +145,6 @@ def add_water_video():
                 fixed_watermarking_thread.start()
                 add_water_video_thread_list.append(fixed_watermarking_thread)
 
-
-                # random_watermarking_thread = My_Thread(mainWindow, ui, "random_watermarking")
-                # random_watermarking_thread.finishSignal.connect(Change_video)
-                # random_watermarking_thread.set_add_water_video_path(video_path[:-4]+"_1.mp4", random_water_path, scale_size_random,
-                #                                                    show_every_seconds_random, show_duration_seconds_random, x, y,num)
-                # random_watermarking_thread.start()
-                # add_water_video_thread_list.append(random_watermarking_thread)
             elif ui.checkBox_2.isChecked():#判断是否是固定水印
                 x = int(ui.x_lineEdit.text())  # 水印的x坐标
                 y = int(ui.y_lineEdit.text())  # 水印的y坐标
@@ -250,6 +228,7 @@ def Change_video(msg):
                         time.sleep(1)
                         print("尝试删除缓存")
                         os.remove(video_path[:-4] + "_1.mp4")
+                        os.rename(video_path[:-4] + "_2.mp4", video_path[:-4] + "_1.mp4")#重命名，将加了随机水印和固定水印的_2重命名为_1
                     except:
                         print("视频占用中，删除失败")
 
@@ -277,10 +256,7 @@ def Change_video_ad(msg):
     if ui.progressBar_4.maximum() == int(miValue) + 1:
         global delete_video_thread_list
         delete_video_thread_list = []
-    # ui.video_label_6.setText(str(msg))
 def close_event(event):
-    # QMessageBox.information(mainWindow, '信息', '是否保存刚刚输入的数据',
-    #                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
     pdf_line = ui.lineEdit.text()
     pdf_delete_num = ui.delete_num_lineEdit.text()
     pdf_ad_ppt = ui.label_pdf_ad.pptpath
@@ -303,24 +279,30 @@ def close_event(event):
     data = {"pdf_line":pdf_line,"pdf_delete_num":pdf_delete_num,"pdf_ad_ppt":pdf_ad_ppt,"pdf_ad_a4":pdf_ad_a4,"video_x":video_x,"video_y":video_y,"scale_size":scale_size,"interval":interval,"duration":duration,"video_water":video_water,"video_water_3":video_water_3,"scale_size_2":scale_size_2,"interval_2":interval_2,"duration_2":duration_2,"video_ad_line":video_ad_line,"video_ad_delete":video_ad_delete,"video_ad_water":video_ad_water}
     config = Config()
     config.set_config(data)
-
+def check_is_empty(data,str1):
+    if(data==''):
+        return str1
+    else:
+        return data
 def set_config():
+    #to do
+    #当上一次保存失败，为空的时候
     config = Config()
     data = config.get_config()
     if(data!=''):
         ui.lineEdit.setText(data['pdf_line'])
         ui.delete_num_lineEdit.setText(data['pdf_delete_num'])
         if data['pdf_ad_ppt']!="":
-            ui.label_pdf_ad.setText(data['pdf_ad_ppt'])
+            ui.label_pdf_ad.setText(check_is_empty(data['pdf_ad_ppt'],"获取到的广告pdf:"))
         else:
-            ui.label_pdf_ad.setText(data['pdf_ad_a4'])
+            ui.label_pdf_ad.setText(check_is_empty(data['pdf_ad_a4'],"获取到的广告pdf:"))
         ui.x_lineEdit.setText(data['video_x'])
         ui.y_lineEdit.setText(data['video_y'])
         ui.scale_size.setText(data['scale_size'])
         ui.interval_lineEdit.setText(data['interval'])
         ui.duration_lineEdit.setText(data['duration'])
-        ui.video_water_label.setText(data['video_water'])
-        ui.video_water_label_3.setText(data['video_water_3'])
+        ui.video_water_label.setText(check_is_empty(data['video_water'],"将固定水印放到此处"))
+        ui.video_water_label_3.setText(check_is_empty(data['video_water_3'],"将随机水印放到此处"))
         ui.video_water_label.water_path = data['video_water']
         ui.video_water_label_3.water_path = data['video_water_3']
 
@@ -330,7 +312,7 @@ def set_config():
         ui.duration_lineEdit_2.setText(data['duration_2'])
         ui.lineEdit_2.setText(data['video_ad_line'])
         ui.delete_s_lineEdit.setText(data['video_ad_delete'])
-        ui.video_water_label_2.setText(data['video_ad_water'])
+        ui.video_water_label_2.setText(check_is_empty(data['video_ad_water'],"将广告视频文件放到此处"))
         ui.video_water_label_2.water_path = data['video_ad_water']
 
 if __name__ == "__main__":

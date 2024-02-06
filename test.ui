@@ -102,7 +102,7 @@
        <rect>
         <x>210</x>
         <y>520</y>
-        <width>411</width>
+        <width>431</width>
         <height>23</height>
        </rect>
       </property>
@@ -151,7 +151,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>直接插入</string>
+       <string>删除插入</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
@@ -262,7 +262,7 @@
        <rect>
         <x>240</x>
         <y>520</y>
-        <width>371</width>
+        <width>441</width>
         <height>23</height>
        </rect>
       </property>
@@ -717,7 +717,7 @@
        <rect>
         <x>220</x>
         <y>500</y>
-        <width>321</width>
+        <width>431</width>
         <height>23</height>
        </rect>
       </property>

@@ -153,13 +153,5 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
         @ffmpeg.on("completed")
         def on_completed():
             print("随机水印完成")
-            # if(is_fix):
-            #     try:
-            #         time.sleep(1)
-            #         print("尝试删除缓存")
-            #         os.remove(video_path)
-            #     except:
-            #         print("视频占用中，删除失败")
-
         ffmpeg.execute()
     ffmpeg1.execute()
