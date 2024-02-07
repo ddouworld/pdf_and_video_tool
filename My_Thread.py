@@ -28,7 +28,7 @@ class My_Thread(QThread):
         self.delete_time = delete_time
         self.num = num
         self.need_delte_time = need_delete_time
-    def set_add_water_video_path(self,video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y,num,random_data):
+    def set_add_water_video_path(self,video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y,num,data):
         self.video_path=video_path
         self.water_path = water_path
         self.scale_size = scale_size
@@ -37,7 +37,8 @@ class My_Thread(QThread):
         self.x = x
         self.y = y
         self.num = num
-        self.random_data = random_data
+        self.data = data
+
     def set_delete_pdf_page_path(self,path,A4path,pptpath,num,delete_num,is_insertion):
         self.pdf_path = path
         self.a4_ad_path = A4path
@@ -61,18 +62,18 @@ class My_Thread(QThread):
             self.finishSignal.emit("第{}个视频处理完成".format(self.num))
         elif self.fun_name == "fixed_watermarking":
             # self.finishSignal.emit("固定水印:正在处理第{}个视频".format(self.num))
-            if self.random_data!="":
-                self.fixed_watermarking(self.video_path,self.water_path,self.scale_size,self.show_every_seconds, self.show_duration_seconds,self.x,self.y,self.random_data)
-                self.finishSignal.emit("1")
-            else:
-                self.fixed_watermarking(self.video_path, self.water_path, self.scale_size, self.show_every_seconds,
-                                        self.show_duration_seconds, self.x, self.y, "")
-                self.finishSignal.emit("2")
+
+            self.fixed_watermarking(self.video_path, self.water_path, self.scale_size, self.show_every_seconds,
+                                    self.show_duration_seconds, self.x, self.y, "")
+            self.finishSignal.emit("2")
 
         elif self.fun_name=="random_watermarking":
             # self.finishSignal.emit("随机添加水印:正在处理第{}个视频".format(self.num))
             random_watermarking(self.video_path, self.water_path, self.scale_size, self.show_every_seconds,
                                self.show_duration_seconds)
+            self.finishSignal.emit("随机添加水印:第{}个视频处理完成".format(self.num))
+        elif self.fun_name == "fixed_and_random_watermarking":
+            fixed_and_random_watermarking(self.data)
             self.finishSignal.emit("随机添加水印:第{}个视频处理完成".format(self.num))
         elif self.fun_name == 'delete_pdf_page_a4':
             try:

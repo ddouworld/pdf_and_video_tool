@@ -116,12 +116,12 @@ def add_water_video():
                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             return
         add_water_video_thread_list = []
-        scale_size = ui.scale_size.text()
+        scale_size = ui.scale_size.text() #固定水印的缩放比例
         scale_size = float(scale_size) #缩放比例
-        water_path = ui.video_water_label.water_path
+        water_path = ui.video_water_label.water_path #固定水印的文件路径
         random_water_path = ui.video_water_label_3.water_path
-        show_every_seconds = float(ui.interval_lineEdit.text())
-        show_duration_seconds = float(ui.duration_lineEdit.text())
+        show_every_seconds = float(ui.interval_lineEdit.text()) #固定水印的间隔时间
+        show_duration_seconds = float(ui.duration_lineEdit.text()) #固定水印的持续时间
         ui.progressBar_3.setValue(0)
         mp4_path_list = ui.video_label.mp4path
         ui.progressBar_3.setRange(0, len(mp4_path_list))
@@ -132,18 +132,31 @@ def add_water_video():
                 scale_size_random = float(scale_size_random)  # 缩放比例
                 show_every_seconds_random = float(ui.interval_lineEdit_2.text())  # 随机水印的水印间隔时间
                 show_duration_seconds_random = float(ui.duration_lineEdit_2.text())  # 随机水印的水印持续时间
-                random_data = {}
-                random_data['random_water_path'] = random_water_path
-                random_data['scale_size'] = scale_size_random
-                random_data['show_every_seconds'] = show_every_seconds_random
-                random_data['show_duration_seconds'] = show_duration_seconds_random
+                data = {}
+                data['video_path'] = video_path
+                data['random_water_path'] = random_water_path
+                data['fix_water_path'] = water_path
+                data['scale_size_random'] = scale_size_random
+                data['scale_size_fix'] = scale_size
+                data['show_every_seconds_random'] = show_every_seconds_random
+                data['show_every_seconds_fix'] = show_every_seconds
+                data['show_duration_seconds_random'] = show_duration_seconds_random
+                data['show_duration_seconds_fix'] = show_duration_seconds
                 x = int(ui.x_lineEdit.text())  # 水印的x坐标
                 y = int(ui.y_lineEdit.text())  # 水印的y坐标
-                fixed_watermarking_thread = My_Thread(mainWindow, ui, "fixed_watermarking")
-                fixed_watermarking_thread.finishSignal.connect(Change_video)
-                fixed_watermarking_thread.set_add_water_video_path(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y,num,random_data)
-                fixed_watermarking_thread.start()
-                add_water_video_thread_list.append(fixed_watermarking_thread)
+                data['x'] = x
+                data['y'] = y
+                fixed_and_random_watermarking_thread = My_Thread(mainWindow, ui, "fixed_and_random_watermarking")
+                fixed_and_random_watermarking_thread.finishSignal.connect(Change_video)
+                fixed_and_random_watermarking_thread.set_add_water_video_path("","","","","","","","",data)
+                fixed_and_random_watermarking_thread.start()
+                add_water_video_thread_list.append(fixed_and_random_watermarking_thread)
+                #fixed_and_random_watermarking(data)
+                # fixed_watermarking_thread = My_Thread(mainWindow, ui, "fixed_watermarking")
+                # fixed_watermarking_thread.finishSignal.connect(Change_video)
+                # fixed_watermarking_thread.set_add_water_video_path(video_path,water_path,scale_size,show_every_seconds, show_duration_seconds,x,y,num,random_data)
+                # fixed_watermarking_thread.start()
+                # add_water_video_thread_list.append(fixed_watermarking_thread)
 
             elif ui.checkBox_2.isChecked():#判断是否是固定水印
                 x = int(ui.x_lineEdit.text())  # 水印的x坐标
@@ -221,16 +234,16 @@ def Change_video(msg):
         if ui.progressBar_3.maximum() == int(miValue) + 1:
             global add_water_video_thread_list
             add_water_video_thread_list = []
-            if msg == '1':
-                mp4_path_list = ui.video_label.mp4path
-                for video_path in mp4_path_list :
-                    try:
-                        time.sleep(1)
-                        print("尝试删除缓存")
-                        os.remove(video_path[:-4] + "_1.mp4")
-                        os.rename(video_path[:-4] + "_2.mp4", video_path[:-4] + "_1.mp4")#重命名，将加了随机水印和固定水印的_2重命名为_1
-                    except:
-                        print("视频占用中，删除失败")
+            # if msg == '1':
+            #     mp4_path_list = ui.video_label.mp4path
+            #     for video_path in mp4_path_list :
+            #         try:
+            #             time.sleep(1)
+            #             print("尝试删除缓存")
+            #             os.remove(video_path[:-4] + "_1.mp4")
+            #             os.rename(video_path[:-4] + "_2.mp4", video_path[:-4] + "_1.mp4")#重命名，将加了随机水印和固定水印的_2重命名为_1
+            #         except:
+            #             print("视频占用中，删除失败")
 
 
 def Change_pdf(num):

@@ -110,13 +110,13 @@ def fixed_watermarking(video_path,water_path,scale_size,show_every_seconds, show
         @ffmpeg_fix_1.on("completed")
         def on_completed():
             print("固定水印完成")
-            if(random_data!=""):
-                random_water_path = random_data['random_water_path']
-                scale_size = random_data['scale_size']
-                show_every_seconds = random_data['show_every_seconds']
-                show_duration_seconds = random_data['show_duration_seconds']
-                random_watermarking(video_path[:-4]+"_1.mp4", random_water_path, scale_size, show_every_seconds, show_duration_seconds,
-                                    True)
+            # if(random_data!=""):
+            #     random_water_path = random_data['random_water_path']
+            #     scale_size = random_data['scale_size']
+            #     show_every_seconds = random_data['show_every_seconds']
+            #     show_duration_seconds = random_data['show_duration_seconds']
+            #     random_watermarking(video_path[:-4]+"_1.mp4", random_water_path, scale_size, show_every_seconds, show_duration_seconds,
+            #                         True)
 
         ffmpeg_fix_1.execute()
     ffmpeg_fix.execute()
@@ -139,10 +139,7 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
     @ffmpeg1.on("completed")
     def on_completed():
         print("随机水印,开始运行")
-        if(is_fix==False):
-            video_path_complete = video_path[:-4]+"_1.mp4"
-        else:
-            video_path_complete = video_path[:-4]+"_2.mp4"
+        video_path_complete = video_path[:-4]+"_1.mp4"
         ffmpeg = (
             FFmpeg()
             .option("y")
@@ -154,4 +151,65 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
         def on_completed():
             print("随机水印完成")
         ffmpeg.execute()
+    ffmpeg1.execute()
+def fixed_and_random_watermarking(data):
+    """首先先将随机水印缩放到需要的大小"""
+    video_size = get_video_size(data['video_path'])
+    video_w = video_size[0]
+    video_h = video_size[1]
+    water_temp_random_path = data['random_water_path'][:-4] + "_temp_random.png"
+    t1 = int(data['show_every_seconds_random'] + data['show_duration_seconds_random'])
+    t2 = int(data['show_every_seconds_random'])
+    scale_size = data['scale_size_random']
+
+    ffmpeg1 = (
+        FFmpeg()
+        .option("y")
+        .input(data['random_water_path'])
+        .output(water_temp_random_path,
+                vf="format=rgba,scale={w}:{h}".format(w=video_w * scale_size, h=video_h * scale_size), q="0")
+    )
+
+    @ffmpeg1.on("completed")
+    def on_completed():
+        """缩放完毕后，对固定水印图片进行缩放"""
+        video_size = get_video_size(data['video_path'])
+        video_w = video_size[0]
+        video_h = video_size[1]
+        water_temp_fix_path = data['fix_water_path'][:-4] + "_temp_fix.png"
+        # t1 = int(data['show_every_seconds_fix'] + data['show_duration_seconds_fix'])
+        # t2 = int(data['show_every_seconds_fix'])
+        scale_size = data['scale_size_fix']
+        ffmpeg2 = (
+            FFmpeg()
+            .option("y")
+            .input(data['fix_water_path'])
+            .output(water_temp_fix_path,
+                    vf="format=rgba,scale={w}:{h}".format(w=video_w * scale_size, h=video_h * scale_size), q="0")
+        )
+        @ffmpeg2.on("completed")
+        def on_completed():
+            print("随机和固定水印缩放完成")
+
+            video_path_complete = data['video_path'][:-4] + "_1.mp4"
+            data['cycle_duration_fix'] = int(data['show_duration_seconds_fix'] + data['show_every_seconds_fix'])
+            img_w, img_h = get_img_size(data['fix_water_path'])
+            x = data['x'] + video_w - img_w
+            y = int(data['y']) + int(video_h / 2)
+            ffmpeg = (
+                FFmpeg()
+                .option("y")
+                .input(data['video_path'])
+                .input(water_temp_random_path)
+                .input(water_temp_fix_path)
+                .output(video_path_complete, {"c:a": "copy",
+                                              "filter_complex": f"overlay='if(ld(0), if(lt(mod(t,{t1}),{t2}),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(W-w));NAN)':'if(ld(0), if(lt(mod(t,{t1}),{t2}),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(H-h));NAN)',"+"overlay='x=if(gt(mod(t,{cycle_duration}),{show_every_seconds}),{x},NAN ):y={y}'".format(cycle_duration=data['cycle_duration_fix'],show_every_seconds=int(data['show_every_seconds_fix']),x=x,y=y)})
+            )
+
+            @ffmpeg.on("completed")
+            def on_completed():
+                print("水印完成")
+            ffmpeg.execute()
+        ffmpeg2.execute()
+
     ffmpeg1.execute()
