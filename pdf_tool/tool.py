@@ -12,6 +12,14 @@ def PDFtk_add_watermark(pdf_path,water_path,num):
     p = subprocess.Popen(cmd)
     p.wait()
     # print(p.returncode )
+def PDFtk_add_watermark_all(pdf_path,water_path):
+    pdf_name = pdf_path[:-4]
+    # pdf_file_path = os.getcwd()+"\\temp\\"+pdf_name
+    cmd = f'pdftk.exe "{pdf_path}" multistamp "{water_path}" output "{pdf_name}_water.pdf"'
+    # print(cmd)
+    # os.system(cmd)
+    p = subprocess.Popen(cmd)
+    p.wait()
 def Merge_pdf(file_path,original_pdf,num):
     if(num==1):
         pdf_name = original_pdf.split("/")[-1][:-4]
@@ -89,10 +97,10 @@ def add_watermark(water_file,page_pdf,w,h,water_w,water_h):
 def add_watermark_2(path,a4_water_path,ppt_water_path):
     # pdfWriter = PyPDF2.PdfWriter()  # 用于写pdf
 
-    pdfReader = PyPDF2.PdfReader(path)  # 读取pdf内容
-    Split_pdf(path,5)
-    pdf_name = path.split("/")[-1][:-4]
-    pdf_file_path = os.getcwd()+"\\temp\\"+pdf_name #临时文件保存路径
+    # pdfReader = PyPDF2.PdfReader(path)  # 读取pdf内容
+    # Split_pdf(path,5)
+    # pdf_name = path.split("/")[-1][:-4]
+    # pdf_file_path = os.getcwd()+"\\temp\\"+pdf_name #临时文件保存路径
     # 遍历pdf的每一页,添加水印
     # for page in range(len(pdfReader.pages)):
     #     h,w = get_pdf_size(pdfReader.pages[page],True)
@@ -104,17 +112,22 @@ def add_watermark_2(path,a4_water_path,ppt_water_path):
     # with open(path[:-4]+'_1.pdf', 'wb') as target_file:
     #     pdfWriter.write(target_file)
     # print("转换成功")
-    page_num = len(pdfReader.pages)
-    for page in range(page_num):
-        pdf_path = pdf_file_path+"\page{:0>5d}.pdf".format(page+1)
-        # h,w = get_pdf_size(pdfReader.pages[page],True)
-        if(get_pdf_type(pdfReader.pages[page],True)):
-            PDFtk_add_watermark(pdf_path,a4_water_path,page+1)
-        else:
-            # page_pdf = add_watermark(ppt_water_path, pdfReader.pages[page], w, h,ppt_water_w,ppt_water_h)
-            PDFtk_add_watermark(pdf_path,ppt_water_path,page+1)
-    Merge_pdf(pdf_file_path,path,page_num)
-    shutil.rmtree(pdf_file_path)
+    # page_num = len(pdfReader.pages)
+    # for page in range(page_num):
+    #     pdf_path = pdf_file_path+"\page{:0>5d}.pdf".format(page+1)
+    #     # h,w = get_pdf_size(pdfReader.pages[page],True)
+    #     if(get_pdf_type(pdfReader.pages[page],True)):
+    #         PDFtk_add_watermark(pdf_path,a4_water_path,page+1)
+    #     else:
+    #         # page_pdf = add_watermark(ppt_water_path, pdfReader.pages[page], w, h,ppt_water_w,ppt_water_h)
+    #         PDFtk_add_watermark(pdf_path,ppt_water_path,page+1)
+    # Merge_pdf(pdf_file_path,path,page_num)
+    # shutil.rmtree(pdf_file_path)
+    if (get_pdf_type(path)):
+        PDFtk_add_watermark_all(path,a4_water_path)
+    else:
+        # page_pdf = add_watermark(ppt_water_path, pdfReader.pages[page], w, h,ppt_water_w,ppt_water_h)
+        PDFtk_add_watermark_all(path,ppt_water_path)
 def Split_pdf(pdf_path,num):
     path = os.getcwd()
     pdf_name = pdf_path.split("/")[-1][:-4]

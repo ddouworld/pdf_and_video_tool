@@ -145,7 +145,7 @@ def random_watermarking(video_path,water_path,scale_size,show_every_seconds, sho
             .option("y")
             .input(video_path)
             .input(water_temp_path)
-            .output(video_path_complete,{"c:a": "copy","filter_complex":f"overlay='if(ld(0), if(lt(mod(t,{t1}),{t2}),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(W-w));NAN)':'if(ld(0), if(lt(mod(t,{t1}),{t2}),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(H-h));NAN)"})
+            .output(video_path_complete,{"c:a": "copy","filter_complex":f"overlay='if(ld(0), if(lt(mod(t,{t1}),{t2}),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(W-w));NAN)':'if(ld(0), if(lt(mod(t,{t1}),{t2}),st(0,0);NAN,ld(1)), st(0,1);ld(1);st(1,random(time(0))*(H-h));NAN)'"})
         )
         @ffmpeg.on("completed")
         def on_completed():
@@ -193,7 +193,7 @@ def fixed_and_random_watermarking(data):
 
             video_path_complete = data['video_path'][:-4] + "_1.mp4"
             data['cycle_duration_fix'] = int(data['show_duration_seconds_fix'] + data['show_every_seconds_fix'])
-            img_w, img_h = get_img_size(data['fix_water_path'])
+            img_w, img_h = get_img_size(water_temp_fix_path)
             x = data['x'] + video_w - img_w
             y = int(data['y']) + int(video_h / 2)
             ffmpeg = (
